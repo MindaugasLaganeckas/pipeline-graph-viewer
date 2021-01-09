@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace PipelineGraph.Database
@@ -8,6 +9,15 @@ namespace PipelineGraph.Database
         public MyContext(DbContextOptions<MyContext> options)
             : base(options)
         { }
-        public DbSet<Graph> Graphs { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Node>()
+                .Property(e => e.Nodes)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+        }
     }
 }
